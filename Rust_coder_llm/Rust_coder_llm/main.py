@@ -5,17 +5,28 @@ from src.rust_compiler import RustCompiler
 from pymongo import MongoClient
 import logging
 import os
+from typing import Optional
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class RustIDEConfig:
+class EnhancedRustIDEConfig:
     def __init__(self):
         self.project_dir = Path('generated_rust_project')
         self.mongodb_uri = os.getenv('MONGO_URI')
-        self.username = "Acuspeedster"
+        self.username = os.getenv('USERNAME')
+        self.max_retries = 3
+        self.timeout = 30
+        self.thread_pool_size = 4
+        
+    def validate_config(self) -> Optional[str]:
+        if not self.mongodb_uri:
+            return "MongoDB URI not configured"
+        return None
 
-def setup_project(config: RustIDEConfig):
+def setup_project(config: EnhancedRustIDEConfig):
     client = MongoClient(config.mongodb_uri)
     db = client['Rust_IDE']
     collection = db['Chat-context']
@@ -33,7 +44,7 @@ def setup_project(config: RustIDEConfig):
     return collection
 
 def main():
-    config = RustIDEConfig()
+    config = EnhancedRustIDEConfig()
     collection = setup_project(config)
     llm_client = QwenCoderClient()
     compiler = RustCompiler()
