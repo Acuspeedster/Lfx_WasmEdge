@@ -41,6 +41,10 @@ class QwenCoderClient:
                              
                              [FILE: src/<module_name>.rs]
                              <file content>
+                             
+                             [END FILE]
+                             [FILE: Readme.md]
+                             <file content>
                              [END FILE]
                              ```
 
@@ -49,6 +53,7 @@ class QwenCoderClient:
                              - `Cargo.toml` with accurate metadata and dependencies  
                              - `src/main.rs` (for binary projects) or `src/lib.rs` (for libraries)  
                              - Additional module files inside `src/` if needed  
+                             - `Readme.md` with a brief project description and usage instructions
                            - Ensure correct module declarations and proper usage of `mod` statements.
 
                         3. **Context Awareness**:  
@@ -57,7 +62,7 @@ class QwenCoderClient:
 
                         4. **Handling User Requests**:  
                            - If the user requests a **specific file**, generate only that file.  
-                           - If multiple files are requested, generate all relevant files.  
+                           - If multiple files are requested, generate all relevant files.
                            - If the user requests **frontend integration**, generate Rust-compatible frontend code based on their specifications.
 
                         5. **Error Handling & Compilation**:  
