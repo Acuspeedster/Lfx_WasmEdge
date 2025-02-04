@@ -12,10 +12,14 @@ class QwenCoderClient:
         self.api_key = os.getenv('API_KEY')
 
     def _prepare_headers(self) -> Dict[str, str]:
-        return {
-            
-            "Authorization": f"Bearer {self.api_key}"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {os.getenv('API_KEY')}",
+            "HTTP-Referer": "http://localhost:8000",
+            "X-Title": "Rust Code Generator"
         }
+        print("Debug - Headers:", {k: v for k, v in headers.items() if k != 'Authorization'})
+        return headers
     
  
     def generate(self,input:str,context:list[dict]) -> str:
@@ -102,6 +106,7 @@ class QwenCoderClient:
             print('response_json', response_json)
             if "choices" in response_json and len(response_json["choices"]) > 0:
                 response_text = response_json["choices"][0]["message"]["content"]
+                print("Raw response:", response_text)
                 return response_text
             else:
                 print("Error: No valid response content from the API.")

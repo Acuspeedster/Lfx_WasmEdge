@@ -1,4 +1,6 @@
 fastapi
 uvicorn
-requests
 pydantic
+python-dotenv
+pymongo
+requests
