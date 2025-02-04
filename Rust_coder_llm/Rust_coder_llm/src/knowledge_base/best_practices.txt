@@ -1,0 +1,40 @@
+# Rust Best Practices and Design Patterns
+
+## Error Handling
+1. Use Result<T, E> for recoverable errors
+2. Use Option<T> when null is a valid scenario
+3. Implement custom error types with std::error::Error
+4. Use anyhow for application code and thiserror for libraries
+
+## Memory Management
+1. Prefer Stack Allocation
+   - Use fixed-size types when possible
+   - Avoid unnecessary Box<T> allocations
+
+2. Smart Pointer Guidelines
+   - Use Arc<T> for thread-safe shared ownership
+   - Use Rc<T> for single-threaded reference counting
+   - Use Box<T> for recursive data structures
+
+## WASM Integration
+1. WasmEdge Best Practices
+   - Use #[wasmedge_bindgen] for public APIs
+   - Keep data serialization simple
+   - Avoid complex pointer operations
+   - Use primitive types at boundaries
+
+## Async Programming
+1. Tokio Runtime Patterns
+   - Use spawn_blocking for CPU-intensive tasks
+   - Implement Stream trait for async iterators
+   - Use select! macro for concurrent operations
+
+## Testing
+1. Unit Testing
+   - Use #[cfg(test)] module
+   - Implement test helpers in tests/common/mod.rs
+   - Use assert_matches! for pattern matching
+
+2. Integration Testing
+   - Place tests in tests/ directory
+   - Use cargo test --test integration_test

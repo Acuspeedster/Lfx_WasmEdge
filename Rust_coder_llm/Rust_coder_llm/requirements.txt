@@ -4,3 +4,6 @@ pydantic
 python-dotenv
 pymongo
 requests
+sentence-transformers==2.2.2
+scikit-learn==1.3.0
+numpy>=1.24.0

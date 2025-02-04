@@ -8,6 +8,8 @@ import os
 from typing import Optional
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+import json
+from src.rag_engine import RustKnowledgeBase
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -46,8 +48,72 @@ def setup_project(config: EnhancedRustIDEConfig):
 def main():
     config = EnhancedRustIDEConfig()
     collection = setup_project(config)
-    llm_client = QwenCoderClient()
+    # llm_client = QwenCoderClient()  # Now includes RAG capabilities
     compiler = RustCompiler()
+    
+    # Initialize the knowledge base
+    kb = RustKnowledgeBase()
+    llm_client = QwenCoderClient()
+    llm_client.kb = kb
+
+    # Add advanced error handling patterns
+    kb.save_knowledge("""
+    # Advanced Error Handling Patterns
+    1. Custom Error Type Pattern
+    ```rust
+    #[derive(Debug, thiserror::Error)]
+    pub enum AppError {
+        #[error("IO error: {0}")]
+        Io(#[from] std::io::Error),
+        #[error("Database error: {0}")]
+        Database(String),
+    }
+    ```
+    """, "error_patterns.txt")  # Added filename parameter here
+
+    # Load documentation
+    kb.save_knowledge_batch([
+        {
+            'content': doc_entry['content'],
+            'metadata': doc_entry['metadata']
+        }
+        for doc_entry in json.load(open('src/knowledge_base/rust_docs.json'))['entries']
+    ])
+
+    # Load code patterns
+    try:
+        with open('src/knowledge_base/rust_patterns.rs', 'r') as f:
+            kb.save_knowledge(f.read(), 'rust_patterns.rs')
+    except FileNotFoundError:
+        logger.error("Could not find rust_patterns.rs file")
+    except Exception as e:
+        logger.error(f"Error loading knowledge base: {e}")
+    
+    # You can add more knowledge at runtime
+    llm_client.kb.add_knowledge("""
+        # WebSocket Server Pattern
+        use tokio::net::{TcpListener, TcpStream};
+        use tokio_tungstenite::accept_async;
+        
+        async fn handle_connection(stream: TcpStream) {
+            let ws_stream = accept_async(stream).await.expect("Failed to accept");
+            // WebSocket handling logic
+        }
+    """)
+
+    # Add comprehensive best practices
+    kb.save_knowledge("""
+    # Advanced Error Handling Patterns
+    1. Custom Error Type Pattern
+    ```rust
+    #[derive(Debug, thiserror::Error)]
+    pub enum AppError {
+        #[error("IO error: {0}")]
+        Io(#[from] std::io::Error),
+        #[error("Database error: {0}")]
+        Database(String),
+    }
+    """, "error_handling.txt")
     
     while True:
         prompt = input("Enter your project description (or 'quit' to exit): ")
