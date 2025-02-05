@@ -1,40 +1,71 @@
-# Rust IDE with LLM Integration 🚀
+# 🚀 Rust IDE with LLM Integration
 
-An intelligent IDE that automates the creation and maintenance of Rust projects using Large Language Model (LLM) technology. Powered by the Qwen2.5 Coder 7b model for smart code generation and automatic error correction.
+Advanced IDE system leveraging RAG-enhanced LLM for intelligent Rust development. Built with Qwen2.5 Coder 7b model for context-aware code generation.
 
-## ✨ Features
+## ✨ Core Features
 
-- 🤖 **AI-Powered Code Generation**: Automatically generates Rust projects based on natural language descriptions.
-- 🔄 **Automated Error Fixing**: Integrates seamlessly with the Rust compiler to identify and fix errors automatically.
-- 📁 **Project Structuring**: Creates an organized Cargo project structure with all essential files.
-- 💾 **Context Persistence**: Uses MongoDB to maintain conversation context for improved iterative code generation.
-- ⚡ **Real-time Compilation**: Receive immediate feedback with integrated Rust compiler support.
+### 🧠 Intelligent Code Generation
+- Natural language to Rust code conversion
+- RAG-enhanced context awareness
+- Smart project structure generation
+- Memory-safe pattern implementation
 
-## 🛠️ Technology Stack
+### 🛠️ Advanced Features
+- Real-time compilation error detection
+- Automated error resolution
+- Smart dependency management
+- MongoDB-based context persistence
 
-- **Language Model**: Qwen2.5 Coder 7b (AI model for code generation and error correction)
-- **Backend**: Python 3.7+
-- **Database**: MongoDB (for context persistence and project data)
-- **Compiler**: Rust (compiles the generated code)
-- **API Integration**: OpenRouter AI (for AI-based code generation)
+## 📋 Technical Stack
+
+### Core Components
+- **Backend**: Python 3.7+, FastAPI
+- **Database**: MongoDB
+- **LLM**: OpenRouter AI (Qwen2.5)
+- **RAG Engine**: Custom knowledge base
+- **Compiler**: Rust native toolchain
+
+### System Diagram
+┌─────────────────┐     ┌──────────────┐     ┌───────────────┐
+│  User Interface │────▶│  LLM Client  │────▶│ OpenRouter AI │
+└─────────────────┘     └──────────────┘     └───────────────┘
+         │                      │                     │
+         ▼                      ▼                     ▼
+┌─────────────────┐     ┌──────────────┐     ┌───────────────┐
+│ Project Manager │────▶│ Rust Compiler│────▶│   MongoDB    │
+└─────────────────┘     └──────────────┘     └───────────────┘
 
 ## 📋 Prerequisites
 
-Before you start, make sure you have the following installed:
+1. **Runtime Environment**
+   - Python 3.7 or higher
+   - Rust and Cargo toolchain
+   - MongoDB (running locally or remote)
 
-- **Python 3.7** or higher
-- **Rust and Cargo** toolchain
-- **MongoDB instance** (for context persistence)
-- **OpenRouter AI API Key** (for AI-powered code generation)
+2. **API Keys**
+   - OpenRouter AI API key
+   - MongoDB connection URI
 
 ## 🚀 Quick Start
 
-<!-- 1. **Clone the Repository**  
-   Clone this repository to your local machine:
+1. **Clone & Setup**
    ```bash
-   git clone https://github.com/Acuspeetster/
-   !-->
+   git clone <repository-url>
+   cd rust-ide-llm
+   pip install -r requirements.txt
+   ```
 
+2. **Generate a new Rust project**
+   ```bash
+   python main.py
+   > Enter project description: "Create a REST API server with actix-web"
+   ```
+
+3. **Fix compilation errors**
+   ```bash
+   python main.py
+   > Enter error details: "Fix the borrowing issue in main.rs"
+   ```
 
 ## ⚠️ Limitations
 Complex project generation may require multiple iterations for optimal results.
@@ -48,8 +79,19 @@ Check out the demo video:
 ## 🤝 Contributing
 Contributions are welcome! Here's how you can contribute:
 
-Fork the project and clone your fork to your local machine.
-Create a feature branch (git checkout -b feature-name).
-Make changes and commit them (git commit -am 'Add new feature').
-Push to the branch (git push origin feature-name).
-Open a Pull Request.
+Fork the repository
+Create a feature branch (git checkout -b feature/amazing-feature)
+Commit changes (git commit -m 'Add amazing feature')
+Push to branch (git push origin feature/amazing-feature)
+Open a Pull Request
+
+## ⚠️ Known Limitations
+Complex patterns may need multiple iterations
+Response time varies with LLM latency
+Requires stable internet connection
+Single project context per session
+
+## 🙏 Acknowledgments
+OpenRouter AI - LLM API
+MongoDB - Database
+Rust Community - Toolchain support
