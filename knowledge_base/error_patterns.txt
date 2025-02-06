@@ -1,0 +1,11 @@
+# Rust Error Handling Patterns
+
+## Custom Error Types
+```rust
+#[derive(Debug, Error)]
+pub enum AppError {
+    #[error("IO error: {0}")]
+    IoError(#[from] std::io::Error),
+    #[error("Parse error: {0}")]
+    ParseError(String),
+}

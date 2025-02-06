@@ -1,0 +1,51 @@
+[
+    {
+      "content": "When implementing error handling in Rust, prefer using the Result type with the ? operator for clean error propagation. This allows for better error handling and composition.",
+      "metadata": {
+        "category": "best_practices",
+        "topic": "error_handling"
+      }
+    },
+    {
+      "content": "For WebAssembly (WASM) projects, ensure all public functions are marked with #[wasmedge_bindgen] and use primitive types that can be easily serialized across the WASM boundary.",
+      "metadata": {
+        "category": "wasm",
+        "topic": "integration"
+      }
+    },
+    {
+      "content": "When working with async Rust, use the tokio runtime for high-performance async operations. The #[tokio::main] attribute macro sets up the async runtime automatically.",
+      "metadata": {
+        "category": "async",
+        "topic": "runtime"
+      }
+    },
+    {
+      "content": "For memory safety in concurrent code, use Arc<Mutex<T>> when sharing mutable state between threads. Arc provides thread-safe reference counting while Mutex ensures exclusive access.",
+      "metadata": {
+        "category": "concurrency",
+        "topic": "thread_safety"
+      }
+    },
+    {
+      "content": "When implementing WebAssembly modules in Rust, use wasm-bindgen for JavaScript interop. Example: #[wasm_bindgen] pub fn add(a: i32, b: i32) -> i32 { a + b }",
+      "metadata": {
+        "category": "wasm",
+        "topic": "interop"
+      }
+    },
+    {
+      "content": "For async Rust operations, tokio provides high-performance primitives. Use #[tokio::main] for the entry point and .await for async calls.",
+      "metadata": {
+        "category": "async",
+        "topic": "runtime"
+      }
+    },
+    {
+      "content": "Testing in Rust: Use #[cfg(test)] module for unit tests, #[test] attribute for test functions, and assert!/assert_eq! macros for assertions.",
+      "metadata": {
+        "category": "testing",
+        "topic": "unit_testing"
+      }
+    }
+  ]

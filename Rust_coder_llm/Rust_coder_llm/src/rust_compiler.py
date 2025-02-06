@@ -32,5 +32,17 @@ class RustCompiler:
         except Exception as e:
             return False, f"Unexpected error: {e}"
 
-
-
+    def get_rust_version(self) -> str:
+        """Get the installed Rust version."""
+        try:
+            result = subprocess.run(
+                ['rustc', '--version'],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            return result.stdout.strip()
+        except subprocess.CalledProcessError:
+            return "Unknown"
+        except Exception:
+            return "Error getting Rust version"

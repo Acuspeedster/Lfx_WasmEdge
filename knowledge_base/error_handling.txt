@@ -1,0 +1,12 @@
+
+    # Advanced Error Handling Patterns
+    1. Custom Error Type Pattern
+    ```rust
+    #[derive(Debug, thiserror::Error)]
+    pub enum AppError {
+        #[error("IO error: {0}")]
+        Io(#[from] std::io::Error),
+        #[error("Database error: {0}")]
+        Database(String),
+    }
+    

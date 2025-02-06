@@ -1,0 +1,12 @@
+
+    # Rust Memory Safety Guidelines
+
+    1. Ownership Rules:
+    - Each value has one owner
+    - Value is dropped when owner goes out of scope
+    - Ownership can be transferred (moved)
+
+    2. Borrowing Rules:
+    - Multiple immutable references OR one mutable reference
+    - References must not outlive the data they refer to
+    

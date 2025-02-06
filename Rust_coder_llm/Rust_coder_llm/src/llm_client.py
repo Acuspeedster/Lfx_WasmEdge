@@ -3,13 +3,50 @@ from typing import Dict
 import json 
 from dotenv import load_dotenv
 from src.project_generator import ProjectGenerator
+from .rag_engine import RustKnowledgeBase
 load_dotenv()
 import os
 class QwenCoderClient:
-    def __init__(self):
+    def __init__(self, model_config: Dict = None):
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.model = "deepseek/deepseek-r1-distill-llama-70b"
         self.api_key = os.getenv('API_KEY')
+        self.kb = RustKnowledgeBase()
+        self.model_config = model_config or {
+            'temperature': 0.7,
+            'top_p': 0.95,
+            'max_tokens': 2000
+        }
+        self._initialize_knowledge_base()
+
+    def _initialize_knowledge_base(self):
+        # Add fundamental Rust patterns and best practices
+        rust_patterns = [
+            """
+            # Error Handling Pattern
+            use std::error::Error;
+            use std::result::Result;
+            
+            fn operation() -> Result<(), Box<dyn Error>> {
+                // Implementation
+                Ok(())
+            }
+            """,
+            """
+            # Async Pattern
+            use tokio;
+            
+            #[tokio::main]
+            async fn main() -> Result<(), Box<dyn std::error::Error>> {
+                // Async implementation
+                Ok(())
+            }
+            """
+            # Add more patterns as needed
+        ]
+        
+        for pattern in rust_patterns:
+            self.kb.add_knowledge(pattern)
 
     def _prepare_headers(self) -> Dict[str, str]:
         headers = {
@@ -23,6 +60,18 @@ class QwenCoderClient:
     
  
     def generate(self,input:str,context:list[dict]) -> str:
+        # Retrieve relevant knowledge
+        relevant_knowledge = self.kb.retrieve_relevant(input)
+        
+        # Enhance prompt with retrieved knowledge
+        enhanced_prompt = f"""
+        Using the following Rust patterns and context:
+        
+        {' '.join(relevant_knowledge)}
+        
+        Original request: {input}
+        """
+        
         endpoint = f"{self.base_url}"
         messages= [
             {"role": "system", "content": """You are an expert Rust developer specializing in project generation and error resolution. 
@@ -92,7 +141,7 @@ class QwenCoderClient:
                 messages.append({"role": "assistant", "content": content})
         
     
-        messages.append({"role": "user", "content": input})
+        messages.append({"role": "user", "content": enhanced_prompt})
         payload = json.dumps({
     "model": "deepseek/deepseek-r1-distill-llama-70b",
     "messages": messages
