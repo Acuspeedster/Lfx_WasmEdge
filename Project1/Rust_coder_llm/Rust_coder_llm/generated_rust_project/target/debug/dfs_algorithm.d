@@ -1,0 +1,1 @@
+C:\Users\arnav\Downloads\Rust_IDE-master\Rust_IDE-master\generated_rust_project\target\debug\dfs_algorithm.exe: C:\Users\arnav\Downloads\Rust_IDE-master\Rust_IDE-master\generated_rust_project\src\main.rs
