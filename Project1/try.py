@@ -48,7 +48,27 @@ response = requests.post(
         "messages": [
             {
                 "role": "user", 
-                "content": "Create a simple Rust hello world program with proper project structure"
+                "content": """🦀 Rust Blockchain Node
+A lightweight blockchain node written in Rust, supporting basic functionalities like:
+
+Transaction Handling (Creating & Verifying Transactions)
+Proof of Work (PoW) Consensus
+Peer-to-Peer (P2P) Network
+Block Creation & Validation
+Wallet System with Public/Private Key Cryptography
+REST API to interact with the blockchain
+Key Components
+Blockchain Data Structure
+Implement blocks, transactions, and Merkle trees for verification.
+Consensus Algorithm (PoW)
+Implement mining with adjustable difficulty.
+Peer-to-Peer Networking
+Nodes should discover and communicate over TCP.
+Wallet System
+Public/Private key cryptography using Elliptic Curve Cryptography (ECC).
+REST API (Rocket / Axum)
+Allow users to check balances, send transactions, and view blockchain state.
+This is non-trivial, requiring multithreading (tokio), cryptography, networking, and data persistence—a solid benchmark for your LLM."""
             }
         ]
     }
