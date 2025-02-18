@@ -10,12 +10,17 @@ class RustKnowledgeBase:
     def __init__(self, kb_path: Path = Path('knowledge_base')):
         self.kb_path = kb_path
         self.kb_path.mkdir(exist_ok=True)
-        self.embedder = SentenceTransformer('all-MiniLM-L6-v2')
+        # Use a more powerful model for better full-document embeddings
+        self.embedder = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
         self.kb_store: List[Dict] = []
-        self.embeddings = None
-        self.nn = NearestNeighbors(n_neighbors=3, metric='cosine')
+        # Use cosine similarity with more neighbors
+        self.nn = NearestNeighbors(n_neighbors=5, metric='cosine', algorithm='brute')
+        
+        # Add caching
+        self.cache_file = self.kb_path / 'vector_cache.npz'
+        self._load_or_create_cache()
         self._load_knowledge_base()
-    
+
     def _load_knowledge_base(self):
         """Load knowledge from files in knowledge_base directory"""
         # Load Rust code files
@@ -36,6 +41,14 @@ class RustKnowledgeBase:
             metadata = {'filename': file.name, 'type': 'documentation'}
             self.add_knowledge(content, metadata)
     
+    def _load_or_create_cache(self):
+        if self.cache_file.exists():
+            cache = np.load(self.cache_file)
+            self.embeddings = cache['embeddings']
+            self.nn.fit(self.embeddings)
+            return True
+        return False
+
     def save_knowledge(self, content: str, filename: str):
         """Save new knowledge to a file"""
         if filename.endswith(('.rs', '.txt')):
@@ -64,26 +77,55 @@ class RustKnowledgeBase:
             self.add_knowledge(entry['content'], entry.get('metadata', {}))
 
     def add_knowledge(self, content: str, metadata: Dict = None):
-        """Add new Rust knowledge to the knowledge base"""
+        """Add new knowledge entry with full document embedding"""
+        embedding = self.embedder.encode(content, normalize_embeddings=True)
         entry = {
             'content': content,
             'metadata': metadata or {},
-            'embedding': self.embedder.encode([content])[0]
+            'embedding': embedding
         }
         self.kb_store.append(entry)
         self._update_embeddings()
         
     def retrieve_relevant(self, query: str, top_k: int = 3) -> List[str]:
-        """Retrieve most relevant knowledge for a given query"""
-        query_embedding = self.embedder.encode([query])[0]
+        """Retrieve most relevant full documents"""
+        query_embedding = self.embedder.encode(query, normalize_embeddings=True)
         if not self.kb_store:
             return []
             
         distances, indices = self.nn.kneighbors([query_embedding])
-        return [self.kb_store[idx]['content'] for idx in indices[0]]
+        # Add similarity scores to results
+        results = []
+        for idx, dist in zip(indices[0], distances[0]):
+            similarity = 1 - dist  # Convert distance to similarity
+            entry = self.kb_store[idx]
+            results.append({
+                'content': entry['content'],
+                'similarity': similarity,
+                'metadata': entry['metadata']
+            })
+        return [r['content'] for r in sorted(results, key=lambda x: x['similarity'], reverse=True)]
         
     def _update_embeddings(self):
-        """Update the nearest neighbors index"""
+        """Update vector index and cache"""
         embeddings = np.array([entry['embedding'] for entry in self.kb_store])
         self.embeddings = embeddings
         self.nn.fit(embeddings)
+        np.savez(self.cache_file, embeddings=embeddings)
+
+from src.rag_engine import RustKnowledgeBase
+from pathlib import Path
+
+def initialize_test_data():
+    kb = RustKnowledgeBase(Path('knowledge_base'))
+    
+    # Load all files automatically
+    kb._load_knowledge_base()
+    
+    # Verify loading
+    test_query = "How to handle errors in Rust?"
+    results = kb.retrieve_relevant(test_query)
+    print(f"Test query results: {len(results)} matches found")
+
+if __name__ == "__main__":
+    initialize_test_data()
