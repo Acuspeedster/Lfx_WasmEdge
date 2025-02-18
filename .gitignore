@@ -1,2 +1,6 @@
+# Large files
 Project2/knowledge_base/vector_cache.npz
 Project2/knowledge_base/*.csv
+Project2/knowledge_base/snapshots/**/*.snapshot
+Project2/knowledge_base/qdrant_snapshots/**/*.snapshot
+Project2/knowledge_base/qdrant_snapshots/**/*.tar.gz
