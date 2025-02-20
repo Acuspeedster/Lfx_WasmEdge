@@ -11,6 +11,8 @@ import numpy as np
 import time
 from datetime import datetime
 from src.project_generator import ProjectGenerator
+from bs4 import BeautifulSoup
+from urllib.parse import quote_plus
 
 class RustKnowledgeBase:
     def __init__(self):
@@ -144,11 +146,16 @@ class RustKnowledgeBase:
             return []
 
     def generate_project(self, description: str, output_dir: str = "generated_project") -> tuple[bool, str]:
-        """Generate a Rust project based on knowledge base context"""
         try:
             # Get relevant knowledge for context
             relevant_results = self.search(description, top_k=3)
             kb_context = "\n".join(r['content'] for r in relevant_results)
+            
+            # If local knowledge base results aren't sufficient, try web search
+            if not kb_context or len(kb_context.split()) < 50:
+                web_results = self.web_search(description)
+                web_context = "\n".join(f"From {r['url']}: {r['snippet']}" for r in web_results)
+                kb_context = f"{kb_context}\n\nAdditional context from web:\n{web_context}"
             
             # Prepare request  
             headers = {
@@ -475,6 +482,42 @@ class RustKnowledgeBase:
             return True, results
         except Exception as e:
             return False, {"error": str(e)}
+
+    def web_search(self, query: str, num_results: int = 3) -> List[Dict[str, str]]:
+        """Perform web search for Rust documentation and examples"""
+        search_results = []
+        
+        try:
+            # Search Rust docs and crates.io
+            search_query = quote_plus(f"site:docs.rs OR site:doc.rust-lang.org {query}")
+            response = requests.get(
+                f"https://www.google.com/search?q={search_query}",
+                headers={"User-Agent": "Mozilla/5.0"}
+            )
+            
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, "html.parser")
+                results = soup.find_all("div", class_="g")
+                
+                for result in results[:num_results]:
+                    try:
+                        title = result.find("h3").text
+                        link = result.find("a")["href"]
+                        snippet = result.find("div", class_="VwiC3b").text
+                        
+                        search_results.append({
+                            "title": title,
+                            "url": link,
+                            "snippet": snippet
+                        })
+                    except:
+                        continue
+                        
+            return search_results
+            
+        except Exception as e:
+            print(f"Web search error: {e}")
+            return []
 
 def main():
     kb = RustKnowledgeBase()
